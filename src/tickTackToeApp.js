@@ -27,25 +27,46 @@ const TickTackToeApp = () => {
     const player1 = 'X'
     const player0 = 'O'
 
+    //Sets the initial state of the board
     const [boardVal, setBoardVal] = useState([
-        [{ value: '1', position: [1, 1] }, { value: '2', position: [1, 2] }, { value: '3', position: [1, 3] }],
-        [{ value: '4', position: [2, 1] }, { value: '5', position: [2, 2] }, { value: '6', position: [2, 3] }],
-        [{ value: '7', position: [3, 1] }, { value: '8', position: [3, 2] }, { value: '9', position: [3, 3] }]
+        [{ value: '', position: [1, 1] }, { value: '', position: [1, 2] }, { value: '', position: [1, 3] }],
+        [{ value: '', position: [2, 1] }, { value: '', position: [2, 2] }, { value: '', position: [2, 3] }],
+        [{ value: '', position: [3, 1] }, { value: '', position: [3, 2] }, { value: '', position: [3, 3] }]
     ])
 
     const [lastPlayed, setLastPlayed] = useState(player0)
+    const [playedPositions, setPlayedPositions] = useState([])
 
 
-    const onPlay = (position) => {
-        if (lastPlayed === player0) {
-            changeValue(position, player1);
-            setLastPlayed(prevState => (player1))
-        }
-        if (lastPlayed === player1) {
-            changeValue(position, player0)
-            setLastPlayed(prevState => (player0))
+    const checkWon = () => {
+        for (let i =0; i < boardVal.length; i++) {
+            console.log(i)
+            if(boardVal[i][0].value === boardVal[i][1].value && boardVal[i][1].value === boardVal[i][2].value && playedPositions.length > 4) {
+                alert('Won');
+                console.log('Won')
+            }
+            console.log('working')
         }
     }
+
+    const onPlay = (position) => {
+        if (!playedPositions.includes(position)) {
+            if (lastPlayed === player0) {
+                changeValue(position, player1);
+                setLastPlayed(player1)
+            }
+            if (lastPlayed === player1) {
+                changeValue(position, player0)
+                setLastPlayed(player0)
+            }
+        }
+    }
+
+    useEffect(()=>{
+        // setTimeout(() => {
+        //     checkWon()
+        // }, 1000);
+    })
 
     const changeValue = (position, newVal) => {
         setBoardVal(prevBoardVal => (
@@ -53,15 +74,16 @@ const TickTackToeApp = () => {
                 row.map(val => {
                     if (val.position !== position) return val
 
-                    console.log(val.onChange)
-                    if (val.canChange == undefined) return {
-                        value: newVal,
-                        position: position,
-                        canChange: false
+                    if (val.canChange == undefined) {
+                        setPlayedPositions(prevPlayedPositions => ([...prevPlayedPositions, position]))
+                        return {
+                            value: newVal,
+                            position: position,
+                            canChange: false
+                        }
                     }
-                    document.getElementById('11')
 
-                    if (val.canChange === false) return val
+                    if (!val.canChange) return val
                 })
             ))
         ))
